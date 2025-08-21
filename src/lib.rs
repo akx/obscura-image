@@ -7,11 +7,6 @@ use anyhow::Result;
 use png::encode_png;
 use typ::{DecodeResult, Image, Output};
 use wasm_bindgen::prelude::*;
-
-// Use `wee_alloc` as the global allocator for smaller binary size
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[wasm_bindgen(js_name = "decodeTiff")]
 pub fn js_decode_tiff(
     #[wasm_bindgen(js_name = "tiffData")] tiff_data: &[u8],
