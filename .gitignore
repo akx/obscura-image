@@ -1,0 +1,6 @@
+*.log
+/.claude
+/target
+Cargo.lock
+bin/
+pkg/
