@@ -1,12 +1,13 @@
 mod png;
-mod tiff;
-mod typ;
+pub mod tiff;
+pub mod typ;
 mod utils;
 
 use anyhow::Result;
 use png::encode_png;
 use typ::{DecodeResult, Image, Output};
 use wasm_bindgen::prelude::*;
+
 #[wasm_bindgen(js_name = "decodeTiff")]
 pub fn js_decode_tiff(
     #[wasm_bindgen(js_name = "tiffData")] tiff_data: &[u8],
@@ -22,7 +23,7 @@ pub fn js_decode_tiff(
         .map_err(|e| JsValue::from_str(&format!("{e}")))
 }
 
-fn encode_result(res: DecodeResult) -> Result<Output> {
+pub fn encode_result(res: DecodeResult) -> Result<Output> {
     let mut successful_results = Vec::new();
 
     for decoded in res.images {

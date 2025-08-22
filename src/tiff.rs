@@ -2,8 +2,8 @@ use crate::typ::{DecodeResult, DecodedImage, ImageDecodeError, ImageMetadata};
 use anyhow::Result;
 use std::io::Cursor;
 use tiff::{
-    decoder::{Decoder, DecodingResult},
     ColorType,
+    decoder::{Decoder, DecodingResult},
 };
 
 #[inline]
