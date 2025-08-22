@@ -8,7 +8,7 @@ use tiff::{
 
 #[inline]
 fn convert_16_to_8(value: u16) -> u8 {
-    ((value + 128) >> 8) as u8
+    (value.saturating_add(128) >> 8) as u8
 }
 
 pub fn decode_tiff(tiff_data: &[u8]) -> Result<DecodeResult> {
