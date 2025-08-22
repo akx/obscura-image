@@ -2,8 +2,8 @@ use crate::typ::{DecodeResult, DecodedImage, ImageDecodeError, ImageMetadata};
 use anyhow::Result;
 use std::io::Cursor;
 use tiff::{
-    ColorType,
     decoder::{Decoder, DecodingResult},
+    ColorType,
 };
 
 #[inline]
@@ -61,21 +61,25 @@ fn decode_single_image(
     let colortype = decoder.colortype()?;
     let image_data = decoder.read_image()?;
 
-    let (rgb_data, png_color_type) = match (&image_data, colortype) {
+    let (rgb_data, png_color_type) = match (image_data, colortype) {
+        (DecodingResult::U8(data), ColorType::Gray(1)) => (
+            data.iter().map(|&b| if b != 0 { 255 } else { 0 }).collect(),
+            png::ColorType::Grayscale,
+        ),
         (DecodingResult::U8(data), ColorType::Gray(8)) => {
             // Convert grayscale to RGB
             let mut rgb_data = Vec::with_capacity(data.len() * 3);
-            for &gray in data {
+            for gray in data {
                 rgb_data.extend_from_slice(&[gray, gray, gray]);
             }
             (rgb_data, png::ColorType::Rgb)
         }
-        (DecodingResult::U8(data), ColorType::RGB(8)) => (data.clone(), png::ColorType::Rgb),
-        (DecodingResult::U8(data), ColorType::RGBA(8)) => (data.clone(), png::ColorType::Rgba),
+        (DecodingResult::U8(data), ColorType::RGB(8)) => (data, png::ColorType::Rgb),
+        (DecodingResult::U8(data), ColorType::RGBA(8)) => (data, png::ColorType::Rgba),
         (DecodingResult::U16(data), ColorType::Gray(16)) => {
             // Convert 16-bit grayscale to 8-bit RGB
             let mut rgb_data = Vec::with_capacity(data.len() * 3);
-            for &gray in data {
+            for gray in data {
                 let gray_8 = convert_16_to_8(gray);
                 rgb_data.extend_from_slice(&[gray_8, gray_8, gray_8]);
             }
@@ -83,11 +87,17 @@ fn decode_single_image(
         }
         (DecodingResult::U16(data), ColorType::RGB(16)) => {
             // Convert 16-bit RGB to 8-bit RGB
-            let mut rgb_data = Vec::with_capacity(data.len());
-            for &value in data {
-                rgb_data.push(convert_16_to_8(value));
-            }
-            (rgb_data, png::ColorType::Rgb)
+            (
+                data.iter().map(|&c| convert_16_to_8(c)).collect(),
+                png::ColorType::Rgb,
+            )
+        }
+        (DecodingResult::U16(data), ColorType::RGBA(16)) => {
+            // Convert 16-bit RGBA to 8-bit RGBA
+            (
+                data.iter().map(|&c| convert_16_to_8(c)).collect(),
+                png::ColorType::Rgba,
+            )
         }
         _ => {
             anyhow::bail!("Unsupported TIFF color type: {:?}", colortype);
