@@ -7,7 +7,7 @@ Decode esoteric image formats in the browser using WebAssembly.
 ## Usage
 
 ```javascript
-import init, { decodeTiff } from 'obscura-image';
+import init, { decodeTiff } from "obscura-image";
 
 await init();
 
@@ -17,7 +17,7 @@ const result = decodeTiff(tiffData);
 // Access decoded images
 for (const image of result.images) {
   console.log(image.metadata); // width, height, color_type, bit_depth
-  const blob = new Blob([image.png_data], { type: 'image/png' });
+  const blob = new Blob([image.png_data], { type: "image/png" });
   // Use the blob as needed
 }
 ```
