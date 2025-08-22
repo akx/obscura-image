@@ -16,7 +16,7 @@ pub struct Image {
     pub metadata: ImageMetadata,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ImageDecodeError {
     pub image_index: usize,
     pub message: String,

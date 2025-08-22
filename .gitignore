@@ -1,4 +1,5 @@
 *.log
+*.profraw
 /.claude
 /target
 Cargo.lock

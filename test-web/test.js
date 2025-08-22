@@ -31,7 +31,7 @@ async function process(file) {
     if (result.errors.length > 0) {
       html += "<h3>Decode Errors:</h3><ul>";
       for (const error of result.errors) {
-        html += `<li><strong>Image ${error.image_index}:</strong> ${error.error_message}</li>`;
+        html += `<li><strong>Image ${error.image_index}:</strong> ${error.message}</li>`;
       }
       html += "</ul>";
     }
