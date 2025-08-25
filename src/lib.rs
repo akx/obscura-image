@@ -1,3 +1,4 @@
+mod metadata;
 mod png;
 pub mod tiff;
 pub mod typ;
@@ -13,17 +14,18 @@ use wasm_bindgen::prelude::*;
 //       and `wasm-bindgen` so we'd still keep emitting an Uint8Array...
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM_TYPES: &'static str = r#"
-export interface ImageMetadata {
+export interface ImageInfo {
   image_index: number;
   width: number;
   height: number;
   color_type: string;
   bit_depth: number;
+  metadata: Map<string, string | number | boolean> | null;
 }
 
 export interface Image {
   png_data: Uint8Array;
-  metadata: ImageMetadata;
+  info: ImageInfo;
 }
 
 export interface ImageDecodeError {
@@ -35,6 +37,7 @@ export interface Output {
   images: Image[];
   errors: ImageDecodeError[];
   total_images: number;
+  metadata: Map<string, string | number | boolean> | null;
 }
 "#;
 
@@ -61,7 +64,7 @@ pub fn encode_result(res: DecodeResult) -> Result<Output> {
             Ok(png_data) => {
                 successful_results.push(Image {
                     png_data,
-                    metadata: decoded.metadata,
+                    info: decoded.info,
                 });
             }
             Err(e) => {
@@ -78,5 +81,6 @@ pub fn encode_result(res: DecodeResult) -> Result<Output> {
         images: successful_results,
         errors: res.errors,
         total_images,
+        metadata: res.metadata,
     })
 }

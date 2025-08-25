@@ -2,39 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>TIFF to PNG Decoder Test</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .output {
-        margin: 20px 0;
-      }
-      img {
-        max-width: 100%;
-        border: 1px solid #ddd;
-      }
-      .error {
-        color: red;
-        background: #fee;
-        padding: 10px;
-        border-radius: 5px;
-      }
-      .success {
-        color: green;
-        background: #efe;
-        padding: 10px;
-        border-radius: 5px;
-      }
-    </style>
+    <title>Image Decoder Test</title>
+    <link rel="stylesheet" href="./test.css" />
   </head>
   <body>
     <div>
-      Select a TIFF file.
-      <input type="file" id="tiffInput" accept=".tiff,.tif" />
+      Select an image file.
+      <input type="file" id="fileInput" />
     </div>
     <div class="output" id="output"></div>
     <script type="module" src="./test.js"></script>

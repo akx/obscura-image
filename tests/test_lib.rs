@@ -52,8 +52,8 @@ fn test_tiff(tiff_data: &[u8], num_images: usize, dimensions: (u32, u32)) {
     assert!(output.errors.is_empty(), "{:?}", output.errors);
     assert_eq!(output.total_images, num_images);
     for image in &output.images {
-        assert_eq!(image.metadata.width, dimensions.0);
-        assert_eq!(image.metadata.height, dimensions.1);
+        assert_eq!(image.info.width, dimensions.0);
+        assert_eq!(image.info.height, dimensions.1);
         verify_png(image);
     }
 }
