@@ -19,13 +19,12 @@ async function process(file) {
     console.log("Decoding result:", result);
 
     let html = `
-                        <div class="success">
-                            Successfully processed TIFF!<br>
-                            Total images found: ${result.total_images}<br>
-                            Successfully decoded: ${result.images.length}<br>
-                            ${result.errors.length > 0 ? `Failed to decode: ${result.errors.length}` : ""}
-                        </div>
-                    `;
+<div class="success">
+    Successfully processed TIFF!<br>
+    Total images found: ${result.total_images}<br>
+    Successfully decoded: ${result.images.length}<br>
+    ${result.errors.length > 0 ? `Failed to decode: ${result.errors.length}` : ""}
+</div>`;
 
     // Show errors if any
     if (result.errors.length > 0) {
@@ -45,20 +44,20 @@ async function process(file) {
         const blob = new Blob([image.png_data], { type: "image/png" });
         const url = URL.createObjectURL(blob);
 
+        let info = image.info;
         html += `
-                                <div style="margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
-                                    <h4>Image ${image.metadata.image_index}</h4>
-                                    <ul>
-                                        <li><strong>Dimensions:</strong> ${image.metadata.width} × ${image.metadata.height}</li>
-                                        <li><strong>Color Type:</strong> ${image.metadata.color_type}</li>
-                                        <li><strong>Bit Depth:</strong> ${image.metadata.bit_depth}-bit</li>
-                                        <li><strong>PNG Size:</strong> ${image.png_data.length.toLocaleString()} bytes</li>
-                                    </ul>
-                                    <img src="${url}" alt="Decoded PNG ${i}" style="max-width: 100%; border: 1px solid #ddd;" />
-                                    <br>
-                                    <a href="${url}" download="${file.name.replace(/\.(tiff?|TIF+)$/i, "")}_${image.metadata.image_index}.png">Download PNG ${image.metadata.image_index}</a>
-                                </div>
-                            `;
+<div style="margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+    <h4>Image ${info.image_index}</h4>
+    <ul>
+        <li><strong>Dimensions:</strong> ${info.width} × ${info.height}</li>
+        <li><strong>Color Type:</strong> ${info.color_type}</li>
+        <li><strong>Bit Depth:</strong> ${info.bit_depth}-bit</li>
+        <li><strong>PNG Size:</strong> ${image.png_data.length.toLocaleString()} bytes</li>
+    </ul>
+    <img src="${url}" alt="Decoded PNG ${i}" style="max-width: 100%; border: 1px solid #ddd;" />
+    <br>
+    <a href="${url}" download="${file.name.replace(/\.(tiff?|TIF+)$/i, "")}_${info.image_index}.png">Download PNG ${info.image_index}</a>
+</div>`;
       }
     }
 

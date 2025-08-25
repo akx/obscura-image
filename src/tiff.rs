@@ -1,9 +1,9 @@
-use crate::typ::{DecodeResult, DecodedImage, ImageDecodeError, ImageMetadata};
+use crate::typ::{DecodeResult, DecodedImage, ImageDecodeError, ImageInfo};
 use anyhow::Result;
 use std::io::Cursor;
 use tiff::{
-    ColorType,
     decoder::{Decoder, DecodingResult},
+    ColorType,
 };
 
 #[inline]
@@ -50,7 +50,11 @@ pub fn decode_tiff(tiff_data: &[u8]) -> Result<DecodeResult> {
         }
     }
 
-    Ok(DecodeResult { images, errors })
+    Ok(DecodeResult {
+        images,
+        errors,
+        metadata: None,
+    })
 }
 
 fn decode_single_image(
@@ -120,12 +124,13 @@ fn decode_single_image(
         _ => (0, "Unknown".to_string()),
     };
 
-    let metadata = ImageMetadata {
+    let info = ImageInfo {
         image_index,
         width,
         height,
         color_type: color_type_str,
         bit_depth,
+        metadata: None,
     };
 
     Ok(DecodedImage {
@@ -133,6 +138,6 @@ fn decode_single_image(
         height,
         color_type: png_color_type,
         data: rgb_data,
-        metadata,
+        info,
     })
 }
