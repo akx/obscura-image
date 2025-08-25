@@ -1,4 +1,4 @@
-import init, { decodeTiff } from "../pkg/obscura_image.js";
+import init, { decodeMrc, decodeTiff } from "../pkg/obscura_image.js";
 
 function dumpMetadata(metadata) {
   let html = "<table>";
@@ -20,7 +20,9 @@ async function process(file) {
     const arrayBuffer = await file.arrayBuffer();
     const fileData = new Uint8Array(arrayBuffer);
     console.log(`Input file: ${file.name}, size: ${fileData.length} bytes`);
-    const result = decodeTiff(fileData);
+    const result = file.name.toLowerCase().endsWith(".mrc")
+      ? decodeMrc(fileData)
+      : decodeTiff(fileData);
     console.log("Decoding result:", result);
     let html = `
 <div class="success">
@@ -73,7 +75,8 @@ async function process(file) {
         }
 
         html += `
-<img src="${url}" alt="Decoded PNG ${i}" /><br>
+<img src="${url}" alt="Decoded PNG ${i}" />
+<br>
 <a href="${url}" download="${file.name}_${info.image_index}.png">Download PNG ${info.image_index}</a>
 </div>`;
       }

@@ -1,4 +1,5 @@
 mod metadata;
+pub mod mrc;
 mod png;
 pub mod tiff;
 pub mod typ;
@@ -48,6 +49,21 @@ pub fn js_decode_tiff(
     utils::set_panic_hook();
 
     tiff::decode_tiff(tiff_data)
+        .and_then(encode_result)
+        .and_then(|result| {
+            serde_wasm_bindgen::to_value(&result)
+                .map_err(|e| anyhow::anyhow!("Failed to serialize result: {e}"))
+        })
+        .map_err(|e| JsValue::from_str(&format!("{e}")))
+}
+
+#[wasm_bindgen(js_name = "decodeMrc", unchecked_return_type = "Output")]
+pub fn js_decode_mrc(
+    #[wasm_bindgen(js_name = "mrcData")] mrc_data: &[u8],
+) -> std::result::Result<JsValue, JsValue> {
+    utils::set_panic_hook();
+
+    mrc::decode_mrc(mrc_data)
         .and_then(encode_result)
         .and_then(|result| {
             serde_wasm_bindgen::to_value(&result)
