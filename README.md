@@ -22,6 +22,11 @@ for (const image of result.images) {
 }
 ```
 
+## Development
+
+- To run the web frontend, serve it from this directory with e.g. `live-server` or Python's `http.server`,
+  then navigate to `http://localhost:8080/test-web/test.html` (substitute port as needed).
+
 ## License
 
 MIT

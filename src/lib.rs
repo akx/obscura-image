@@ -1,3 +1,5 @@
+mod metadata;
+pub mod mrc;
 mod png;
 pub mod tiff;
 pub mod typ;
@@ -13,17 +15,18 @@ use wasm_bindgen::prelude::*;
 //       and `wasm-bindgen` so we'd still keep emitting an Uint8Array...
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM_TYPES: &'static str = r#"
-export interface ImageMetadata {
+export interface ImageInfo {
   image_index: number;
   width: number;
   height: number;
   color_type: string;
   bit_depth: number;
+  metadata: Map<string, string | number | boolean> | null;
 }
 
 export interface Image {
   png_data: Uint8Array;
-  metadata: ImageMetadata;
+  info: ImageInfo;
 }
 
 export interface ImageDecodeError {
@@ -35,6 +38,7 @@ export interface Output {
   images: Image[];
   errors: ImageDecodeError[];
   total_images: number;
+  metadata: Map<string, string | number | boolean> | null;
 }
 "#;
 
@@ -53,6 +57,21 @@ pub fn js_decode_tiff(
         .map_err(|e| JsValue::from_str(&format!("{e}")))
 }
 
+#[wasm_bindgen(js_name = "decodeMrc", unchecked_return_type = "Output")]
+pub fn js_decode_mrc(
+    #[wasm_bindgen(js_name = "mrcData")] mrc_data: &[u8],
+) -> std::result::Result<JsValue, JsValue> {
+    utils::set_panic_hook();
+
+    mrc::decode_mrc(mrc_data)
+        .and_then(encode_result)
+        .and_then(|result| {
+            serde_wasm_bindgen::to_value(&result)
+                .map_err(|e| anyhow::anyhow!("Failed to serialize result: {e}"))
+        })
+        .map_err(|e| JsValue::from_str(&format!("{e}")))
+}
+
 pub fn encode_result(res: DecodeResult) -> Result<Output> {
     let mut successful_results = Vec::new();
 
@@ -61,7 +80,7 @@ pub fn encode_result(res: DecodeResult) -> Result<Output> {
             Ok(png_data) => {
                 successful_results.push(Image {
                     png_data,
-                    metadata: decoded.metadata,
+                    info: decoded.info,
                 });
             }
             Err(e) => {
@@ -78,5 +97,6 @@ pub fn encode_result(res: DecodeResult) -> Result<Output> {
         images: successful_results,
         errors: res.errors,
         total_images,
+        metadata: res.metadata,
     })
 }
